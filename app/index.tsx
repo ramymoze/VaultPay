@@ -1,23 +1,36 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, SafeAreaView, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
+} from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function CustomerScreen() {
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardholderName, setCardholderName] = useState('');
-  const [expiry, setExpiry] = useState('');
-  const [cvv, setCvv] = useState('');
-  
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardholderName, setCardholderName] = useState("");
+  const [expiry, setExpiry] = useState("");
+  const [cvv, setCvv] = useState("");
+
   const router = useRouter();
 
   const handleCardNumberChange = (text: string) => {
-
-    const cleaned = text.replace(/\\D/g, '');
+    const cleaned = text.replace(/\D/g, "");
     setCardNumber(cleaned.substring(0, 16));
   };
 
   const handleExpiryChange = (text: string) => {
-    const cleaned = text.replace(/\\D/g, '');
+    // Strip the slash so we work with raw digits
+    const cleaned = text.replace(/\D/g, "");
     if (cleaned.length > 2) {
       setExpiry(`${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`);
     } else {
@@ -25,114 +38,169 @@ export default function CustomerScreen() {
     }
   };
 
+  const handleCvvChange = (text: string) => {
+    const cleaned = text.replace(/\D/g, "");
+    setCvv(cleaned.substring(0, 4));
+  };
+
   const getMaskedCardNumber = () => {
-    if (cardNumber.length === 0) return 'XXXX XXXX XXXX XXXX';
-    let masked = '';
+    if (cardNumber.length === 0) return "XXXX XXXX XXXX XXXX";
+    let masked = "";
     for (let i = 0; i < 16; i++) {
-      if (i > 0 && i % 4 === 0) masked += ' ';
+      if (i > 0 && i % 4 === 0) masked += " ";
       if (i < cardNumber.length) {
         masked += cardNumber[i];
       } else {
-        masked += 'X';
+        masked += "X";
       }
     }
     return masked;
   };
 
-  const isFormValid = cardNumber.length === 16 && cardholderName.trim().length > 0 && expiry.length === 5 && cvv.length >= 3;
+  const isFormValid =
+    cardNumber.length === 16 &&
+    cardholderName.trim().length > 0 &&
+    expiry.length === 5 &&
+    cvv.length >= 3;
 
   return (
     <SafeAreaView style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <KeyboardAvoidingView 
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.content}
         >
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header */}
             <View style={styles.header}>
               <Text style={styles.title}>Add Payment Card</Text>
-              <Text style={styles.subtitle}>Enter your card details to checkout</Text>
+              <Text style={styles.subtitle}>
+                Enter your card details to checkout
+              </Text>
             </View>
 
+            {/* Card preview */}
             <View style={styles.cardMockup}>
-              <Text style={styles.cardLogo}>VaultPay</Text>
-              <Text style={styles.cardNumberDisplay}>{getMaskedCardNumber()}</Text>
+              <View style={styles.cardTopRow}>
+                <Text style={styles.cardLogo}>VaultPay</Text>
+                <Ionicons name="wifi-outline" size={22} color="#0A84FF" style={{ transform: [{ rotate: '90deg' }] }} />
+              </View>
+              <Text style={styles.cardNumberDisplay}>
+                {getMaskedCardNumber()}
+              </Text>
               <View style={styles.cardFooter}>
                 <View>
                   <Text style={styles.cardLabel}>CARDHOLDER</Text>
-                  <Text style={styles.cardValue}>{cardholderName.trim() ? cardholderName.toUpperCase() : 'JANE DOE'}</Text>
+                  <Text style={styles.cardValue}>
+                    {cardholderName.trim()
+                      ? cardholderName.toUpperCase()
+                      : "YOUR NAME"}
+                  </Text>
                 </View>
                 <View>
                   <Text style={styles.cardLabel}>EXPIRES</Text>
-                  <Text style={styles.cardValue}>{expiry || '12/28'}</Text>
+                  <Text style={styles.cardValue}>{expiry || "MM/YY"}</Text>
                 </View>
               </View>
             </View>
 
+            {/* Form */}
             <View style={styles.formContainer}>
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Card Number</Text>
-                <TextInput
-                  style={styles.input}
-                  keyboardType="numeric"
-                  placeholder="0000 0000 0000 0000"
-                  placeholderTextColor="#666"
-                  value={cardNumber}
-                  onChangeText={handleCardNumberChange}
-                  maxLength={16}
-                  returnKeyType="done"
-                />
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="card-outline" size={18} color="#888888" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.inputField}
+                    keyboardType="numeric"
+                    placeholder="0000 0000 0000 0000"
+                    placeholderTextColor="#555"
+                    value={cardNumber}
+                    onChangeText={handleCardNumberChange}
+                    maxLength={16}
+                    returnKeyType="done"
+                  />
+                </View>
               </View>
 
               <View style={styles.inputContainer}>
                 <Text style={styles.inputLabel}>Cardholder Name</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Jane Doe"
-                  placeholderTextColor="#666"
-                  value={cardholderName}
-                  onChangeText={setCardholderName}
-                  autoCapitalize="words"
-                  returnKeyType="done"
-                />
-              </View>
-
-              <View style={styles.row}>
-                <View style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}>
-                  <Text style={styles.inputLabel}>Expiry Date</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons name="person-outline" size={18} color="#888888" style={styles.inputIcon} />
                   <TextInput
-                    style={styles.input}
-                    keyboardType="numeric"
-                    placeholder="MM/YY"
-                    placeholderTextColor="#666"
-                    value={expiry}
-                    onChangeText={handleExpiryChange}
-                    maxLength={5}
+                    style={styles.inputField}
+                    placeholder="Your full name"
+                    placeholderTextColor="#555"
+                    value={cardholderName}
+                    onChangeText={setCardholderName}
+                    autoCapitalize="words"
                     returnKeyType="done"
                   />
                 </View>
-                <View style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}>
+              </View>
+
+              <View style={styles.row}>
+                <View
+                  style={[styles.inputContainer, { flex: 1, marginRight: 8 }]}
+                >
+                  <Text style={styles.inputLabel}>Expiry Date</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="calendar-outline" size={18} color="#888888" style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.inputField}
+                      keyboardType="numeric"
+                      placeholder="MM/YY"
+                      placeholderTextColor="#555"
+                      value={expiry}
+                      onChangeText={handleExpiryChange}
+                      maxLength={5}
+                      returnKeyType="done"
+                    />
+                  </View>
+                </View>
+                <View
+                  style={[styles.inputContainer, { flex: 1, marginLeft: 8 }]}
+                >
                   <Text style={styles.inputLabel}>CVV</Text>
-                  <TextInput
-                    style={styles.input}
-                    keyboardType="numeric"
-                    placeholder="123"
-                    placeholderTextColor="#666"
-                    value={cvv}
-                    onChangeText={(t) => setCvv(t.replace(/\\D/g, '').substring(0, 4))}
-                    maxLength={4}
-                    secureTextEntry
-                    returnKeyType="done"
-                  />
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="lock-closed-outline" size={18} color="#888888" style={styles.inputIcon} />
+                    <TextInput
+                      style={styles.inputField}
+                      keyboardType="numeric"
+                      placeholder="123"
+                      placeholderTextColor="#555"
+                      value={cvv}
+                      onChangeText={handleCvvChange}
+                      maxLength={4}
+                      secureTextEntry
+                      returnKeyType="done"
+                    />
+                  </View>
                 </View>
               </View>
             </View>
 
-            <TouchableOpacity 
+            {/* Security note */}
+            <View style={styles.securityNote}>
+              <Ionicons name="shield-checkmark-outline" size={14} color="#888888" />
+              <Text style={styles.securityText}>
+                Card data is tokenized and never stored on our servers
+              </Text>
+            </View>
+
+            {/* Submit button */}
+            <TouchableOpacity
               style={[styles.button, !isFormValid && styles.buttonDisabled]}
               disabled={!isFormValid}
-              onPress={() => router.push({ pathname: '/checkout', params: { cardNumber } })}
+              onPress={() =>
+                router.push({ pathname: "/checkout", params: { cardNumber } })
+              }
+              activeOpacity={0.7}
             >
+              <Ionicons name="lock-closed" size={18} color="#ffffff" style={{ marginRight: 8 }} />
               <Text style={styles.buttonText}>Proceed to Checkout</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -145,7 +213,7 @@ export default function CustomerScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: "#0a0a0a",
   },
   content: {
     flex: 1,
@@ -153,100 +221,131 @@ const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     padding: 24,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   header: {
-    marginBottom: 40,
+    marginBottom: 32,
   },
   title: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#ffffff',
+    fontWeight: "700",
+    color: "#ffffff",
     marginBottom: 8,
   },
   subtitle: {
-    fontSize: 16,
-    color: '#888888',
+    fontSize: 15,
+    color: "#888888",
   },
+  // Card mockup
   cardMockup: {
-    backgroundColor: '#1c1c1e',
+    backgroundColor: "#1c1c1e",
     borderRadius: 20,
     padding: 24,
     height: 200,
-    justifyContent: 'space-between',
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.5,
+    justifyContent: "space-between",
+    marginBottom: 32,
+    shadowColor: "#0A84FF",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
     shadowRadius: 20,
     elevation: 10,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: "#333",
+  },
+  cardTopRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   cardLogo: {
-    color: '#ffffff',
+    color: "#0A84FF",
     fontSize: 20,
-    fontWeight: '800',
-    fontStyle: 'italic',
+    fontWeight: "800",
+    fontStyle: "italic",
   },
   cardNumberDisplay: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 22,
     letterSpacing: 2,
-    marginTop: 20,
+    marginTop: 16,
   },
   cardFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
   },
   cardLabel: {
-    color: '#888888',
+    color: "#888888",
     fontSize: 10,
     letterSpacing: 1,
   },
   cardValue: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 14,
     marginTop: 4,
   },
+  // Form
   formContainer: {
-    marginBottom: 30,
+    marginBottom: 16,
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   inputLabel: {
-    color: '#ffffff',
-    marginBottom: 10,
-    fontSize: 14,
+    color: "#ffffff",
+    marginBottom: 8,
+    fontSize: 13,
+    fontWeight: "500",
   },
-  input: {
-    backgroundColor: '#1c1c1e',
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1c1c1e",
     borderRadius: 12,
-    padding: 16,
-    color: '#ffffff',
-    fontSize: 18,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: "#333",
   },
+  inputIcon: {
+    paddingLeft: 14,
+  },
+  inputField: {
+    flex: 1,
+    padding: 16,
+    color: "#ffffff",
+    fontSize: 16,
+  },
+  // Security note
+  securityNote: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 6,
+    marginBottom: 20,
+  },
+  securityText: {
+    color: "#888888",
+    fontSize: 12,
+  },
+  // Button
   button: {
-    backgroundColor: '#0A84FF',
+    backgroundColor: "#0A84FF",
     padding: 18,
     borderRadius: 16,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
+    flexDirection: "row",
+    justifyContent: "center",
   },
   buttonDisabled: {
-    backgroundColor: '#0A84FF55',
+    backgroundColor: "#0A84FF55",
   },
   buttonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
