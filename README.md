@@ -1,50 +1,55 @@
-# Welcome to your Expo app 👋
+# 📱 VaultPay Mobile
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile payment demo app built with React Native showcasing secure payment tokenization backed by a blockchain audit trail.
 
-## Get started
+> This is the frontend demo for the [Blockchain-Token-Vault](https://github.com/ramymoze/Blockchain-Token-Vault) backend project.
 
-1. Install dependencies
+## Screens
 
-   ```bash
-   npm install
-   ```
+**1. Add Payment Card**
+Enter your card details. The card mockup updates live as you type.
 
-2. Start the app
+<img width="828" height="1792" alt="IMG_1413" src="https://github.com/user-attachments/assets/384985f9-ebbb-4c4f-948f-cb604a1a15f1" />
+<img width="828" height="1792" alt="IMG_1410" src="https://github.com/user-attachments/assets/0aa4ea5c-b2b5-4a74-85bb-85171579a2c0" />
 
-   ```bash
-   npx expo start
-   ```
+**2. Checkout**
+Simulates an NFC/QR scan at the merchant terminal. Pressing "Scan & Pay" tokenizes the card number — the real number never reaches the merchant.
 
-In the output, you'll find options to open the app in a
+<img width="828" height="1792" alt="IMG_1412" src="https://github.com/user-attachments/assets/a9ae3f1d-9965-4ac7-a07e-127d06a8e55f" />
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+<img width="828" height="1792" alt="IMG_1411" src="https://github.com/user-attachments/assets/a7743ae9-328d-4bb4-be94-5f8bf8ee4247" />
 
-## Get a fresh project
+**3. Merchant Terminal**
+The merchant receives only the token. Pressing "Process Payment" triggers detokenization behind the scenes and confirms the payment.
 
-When you're ready, run:
+<img width="828" height="1792" alt="IMG_1413" src="https://github.com/user-attachments/assets/4724eb06-d873-4755-8c96-78bc6bf7eb35" />
+
+**4. Blockchain Explorer (VaultChain)**
+Live view of the immutable audit trail. Every tokenize and detokenize operation appears as a linked block.
+
+<img width="828" height="1792" alt="IMG_1414" src="https://github.com/user-attachments/assets/53459702-e8b4-40d1-9ff6-40b0cb710799" />
+
+## Setup
 
 ```bash
-npm run reset-project
+# Install dependencies
+npm install
+
+# Start the app
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Make sure the backend is running. Update the API base URL in the config file to match your backend address.
 
-## Learn more
+## Backend
 
-To learn more about developing your project with Expo, look at the following resources:
+This app connects to the VaultPay Flask backend. Clone and run it from:
+[Blockchain-Token-Vault](
+https://github.com/ramymoze/Blockchain-Token-Vault)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Tech Stack
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- React Native
+- Expo Router
+- Flask backend (external)
